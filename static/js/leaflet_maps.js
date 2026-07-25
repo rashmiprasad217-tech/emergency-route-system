@@ -24,6 +24,9 @@ function initLeafletMap() {
         setTimeout(() => mapLoader.style.display = 'none', 300);
     }
 
+    // Guard against multiple initializations
+    if (map) return;
+
     // Initialize Leaflet map
     map = L.map('map', {
         center: [userLat, userLng],
@@ -36,6 +39,16 @@ function initLeafletMap() {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    // Initial default User marker icon
+    const userIcon = L.divIcon({
+        className: 'custom-user-marker',
+        html: '<div style="background-color: #0d6efd; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(13,110,253,0.8);"></div>',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+    });
+    userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+    userMarker.bindPopup("<strong>Default Location Area</strong>");
 
     // Bind Geolocation Button
     const geoBtn = document.getElementById('btn-geolocation');
@@ -54,7 +67,7 @@ function initLeafletMap() {
     if (typeParam) {
         setTimeout(() => {
             triggerSearch(typeParam);
-        }, 1200);
+        }, 1000);
     }
 }
 
@@ -63,8 +76,9 @@ function initLeafletMap() {
  */
 function detectUserLocation(showToast = false) {
     if (!navigator.geolocation) {
-        updateLocationStatus("Browser does not support geolocation.", "danger");
-        if (showToast) showAlert("Your browser does not support GPS location detection.", "danger");
+        updateLocationStatus("Browser does not support geolocation. Using default location.", "warning");
+        if (showToast) showAlert("Your browser does not support GPS location detection.", "warning");
+        isLocationDetected = true;
         return;
     }
 
@@ -76,11 +90,10 @@ function detectUserLocation(showToast = false) {
             userLng = position.coords.longitude;
             isLocationDetected = true;
 
-            map.setView([userLat, userLng], 15);
+            if (map) map.setView([userLat, userLng], 15);
 
-            if (userMarker) map.removeLayer(userMarker);
+            if (userMarker && map) map.removeLayer(userMarker);
 
-            // User marker icon
             const userIcon = L.divIcon({
                 className: 'custom-user-marker',
                 html: '<div style="background-color: #0d6efd; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(13,110,253,0.8);"></div>',
@@ -88,8 +101,10 @@ function detectUserLocation(showToast = false) {
                 iconAnchor: [10, 10]
             });
 
-            userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
-            userMarker.bindPopup("<strong>Your Current Location</strong>");
+            if (map) {
+                userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+                userMarker.bindPopup("<strong>Your Current Location</strong>");
+            }
 
             updateLocationStatus("GPS Coordinates loaded successfully.", "success");
             if (showToast) showAlert("GPS location detected successfully!", "success");
@@ -99,17 +114,17 @@ function detectUserLocation(showToast = false) {
             }
         },
         function(error) {
-            let errorMsg = "Unable to detect location. Using default position.";
+            let errorMsg = "Unable to detect live GPS location. Using default location area.";
             if (error.code === error.PERMISSION_DENIED) {
-                errorMsg = "Location permission denied. Using default map area.";
+                errorMsg = "Location permission denied or blocked. Using default map area.";
             }
             updateLocationStatus(errorMsg, "warning");
             if (showToast) showAlert(errorMsg, "warning");
 
-            // Even if denied, mark location as available to allow nearby facility discovery
+            // Fallback so application remains 100% usable
             isLocationDetected = true;
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
     );
 }
 
@@ -496,7 +511,9 @@ function stopRealTimeNavigation() {
     showAlert("Live GPS Navigation stopped.", "info");
 }
 
-// Auto-start Leaflet map when script loads
-document.addEventListener("DOMContentLoaded", function() {
-    initLeafletMap();
-});
+// Auto-start Leaflet map reliably when script loads
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    setTimeout(initLeafletMap, 100);
+} else {
+    document.addEventListener("DOMContentLoaded", initLeafletMap);
+}
