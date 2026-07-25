@@ -18,8 +18,15 @@ app.config.from_object(Config)
 def get_db():
     """Opens a new MongoDB client connection if there is none yet for the current application context."""
     if 'db' not in g:
-        # Create MongoDB client with a 5-second connection timeout
-        g.client = pymongo.MongoClient(app.config['MONGO_URI'], serverSelectionTimeoutMS=5000)
+        # Create MongoDB client with a 5-second connection timeout and SSL/TLS serverless compatibility
+        try:
+            g.client = pymongo.MongoClient(
+                app.config['MONGO_URI'],
+                serverSelectionTimeoutMS=5000,
+                tlsAllowInvalidCertificates=True
+            )
+        except Exception:
+            g.client = pymongo.MongoClient(app.config['MONGO_URI'], serverSelectionTimeoutMS=5000)
         try:
             # Attempt to extract default database name from connection string
             g.db = g.client.get_default_database()

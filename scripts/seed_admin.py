@@ -12,7 +12,7 @@ def seed():
     print("Seeding default admin credentials to MongoDB...")
     client = None
     try:
-        client = pymongo.MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=5000)
+        client = pymongo.MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=5000, tlsAllowInvalidCertificates=True)
         try:
             db = client.get_default_database()
             if db is None or db.name == 'admin':
