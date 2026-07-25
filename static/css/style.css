@@ -1,0 +1,148 @@
+/* Emergency Route System - Custom Stylesheet */
+
+/* Custom Palette */
+:root {
+    --primary-font: 'Inter', sans-serif;
+    --heading-font: 'Outfit', sans-serif;
+    --dark-bg: #1e1e24;
+    --danger-red: #a8201a;
+    --soft-danger: rgba(168, 32, 26, 0.05);
+    --border-radius-lg: 16px;
+    --border-radius-md: 10px;
+    --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+/* Typography & Layout Reset */
+body {
+    font-family: var(--primary-font);
+    color: #495057;
+    background-color: #f8f9fa;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .Outfit-font {
+    font-family: var(--heading-font);
+    font-weight: 600;
+}
+
+/* Tracking / Spacing */
+.tracking-wider {
+    letter-spacing: 0.05em;
+}
+
+/* Transitions */
+.hover-translate {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-translate:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Pulse Micro-Animation */
+@keyframes pulse {
+    0% {
+        transform: scale(0.98);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(220, 53, 69, 0);
+    }
+    100% {
+        transform: scale(0.98);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Table Custom Styling */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table th {
+    font-weight: 600;
+    font-family: var(--heading-font);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.015);
+}
+
+/* Sleek Form Controls */
+.form-control:focus, .form-select:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.15);
+    background-color: #fff;
+}
+
+.input-group-text {
+    border-color: #dee2e6;
+}
+
+/* Custom Card Layouts */
+.card {
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.3s ease;
+}
+
+/* Button Customizations */
+.btn-danger {
+    background-color: var(--danger-red);
+    border-color: var(--danger-red);
+}
+
+.btn-danger:hover, .btn-danger:focus, .btn-danger:active {
+    background-color: #881a15 !important;
+    border-color: #881a15 !important;
+}
+
+.btn-outline-danger {
+    color: var(--danger-red);
+    border-color: var(--danger-red);
+}
+
+.btn-outline-danger:hover {
+    background-color: var(--danger-red);
+    border-color: var(--danger-red);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Footer Adjustments */
+footer {
+    font-family: var(--heading-font);
+}
+
+/* Media Queries for Responsive Tables & Borders */
+@media (max-width: 768px) {
+    .border-md-end {
+        border-right: none !important;
+        border-bottom: 3px solid #dc3545 !important;
+    }
+}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - My Search History{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+        <div class="bg-dark text-white p-4 d-flex justify-content-between align-items-center border-bottom border-danger border-3">
+            <div>
+                <h2 class="fw-bold mb-1 Outfit-font"><i class="fa-solid fa-history text-danger me-2"></i>My Search History</h2>
+                <p class="text-white-50 small mb-0">List of your recent emergency facility searches</p>
+            </div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fa-solid fa-map-location-dot me-1"></i> Open Map
+            </a>
+        </div>
+        
+        <div class="card-body p-0 bg-white">
+            {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" class="ps-4">Search ID</th>
+                                <th scope="col">Emergency Type</th>
+                                <th scope="col">Search Coordinates (Lat, Lng)</th>
+                                <th scope="col" class="pe-4">Date &amp; Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in history %}
+                                <tr>
+                                    <td class="ps-4 fw-semibold text-secondary">#{{ log.id }}</td>
+                                    <td>
+                                        {% if log.emergency_type == 'Hospital' %}
+                                            <span class="badge bg-danger px-3 py-2 rounded-pill"><i class="fa-solid fa-square-h me-1"></i> Hospital</span>
+                                        {% elif log.emergency_type == 'Police' %}
+                                            <span class="badge bg-primary px-3 py-2 rounded-pill"><i class="fa-solid fa-shield-halved me-1"></i> Police Station</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill"><i class="fa-solid fa-fire-extinguisher me-1"></i> Fire Station</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <code class="bg-light p-2 rounded text-dark" style="font-size: 0.9rem;">
+                                            {{ log.latitude }}, {{ log.longitude }}
+                                        </code>
+                                    </td>
+                                    <td class="pe-4 text-muted">
+                                        {{ log.searched_at.strftime('%d %b %Y, %I:%M %p') if log.searched_at else 'N/A' }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 my-4">
+                    <i class="fa-solid fa-magnifying-glass-location text-secondary display-3 mb-3"></i>
+                    <h5 class="fw-bold text-dark">No searches found</h5>
+                    <p class="text-muted mb-4">You have not searched for any emergency services yet.</p>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-danger px-4 rounded-3 fw-semibold">
+                        <i class="fa-solid fa-location-crosshairs me-1"></i> Search Now
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

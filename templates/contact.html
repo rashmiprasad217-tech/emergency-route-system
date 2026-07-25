@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - Contact Us{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Contact Form Column -->
+                    <div class="col-md-7 p-4 p-md-5 bg-white">
+                        <h2 class="fw-bold text-dark Outfit-font mb-2">Get in Touch</h2>
+                        <p class="text-muted mb-4">Send us a message or report a bug related to the routing calculations.</p>
+                        
+                        <form action="{{ url_for('contact') }}" method="POST" class="needs-validation" novalidate>
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-semibold text-muted">Full Name</label>
+                                <input type="text" class="form-control py-2" id="name" name="name" placeholder="John Doe" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-semibold text-muted">Email Address</label>
+                                <input type="email" class="form-control py-2" id="email" name="email" placeholder="john@example.com" required>
+                                <div class="invalid-feedback">Please enter a valid email.</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="message" class="form-label fw-semibold text-muted">Message</label>
+                                <textarea class="form-control" id="message" name="message" rows="5" placeholder="Type your query here..." required></textarea>
+                                <div class="invalid-feedback">Please write a message.</div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-danger py-2 px-4 fw-semibold rounded-3 shadow-sm">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Send Message
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Contact details Column -->
+                    <div class="col-md-5 p-4 p-md-5 bg-dark text-white d-flex flex-column justify-content-between">
+                        <div>
+                            <h3 class="fw-bold text-danger Outfit-font mb-4">System Support</h3>
+                            <p class="text-white-50 mb-4">If you are facing problems setting up the Google Maps Javascript API or linking MySQL, please use these channels.</p>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fa-solid fa-envelope text-danger fs-4 me-3"></i>
+                                <div>
+                                    <span class="d-block text-white-50 small">Email Support</span>
+                                    <strong>support@emergencyroute.com</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="fa-solid fa-headset text-danger fs-4 me-3"></i>
+                                <div>
+                                    <span class="d-block text-white-50 small">Technical Helpline</span>
+                                    <strong>+1 (800) 123-4567</strong>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <i class="fa-solid fa-location-dot text-danger fs-4 me-3"></i>
+                                <div>
+                                    <span class="d-block text-white-50 small">Project Headquarters</span>
+                                    <strong>University Dept of Computer Applications</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-top border-secondary">
+                            <span class="text-white-50 small">Project Version: 1.0.0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enable Bootstrap validation styles on form submission
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+{% endblock %}

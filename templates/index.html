@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - Home{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-white py-5 mb-5" style="background: linear-gradient(135deg, #1e1e24 0%, #a8201a 100%); min-height: 450px; display: flex; align-items: center;">
+    <div class="container text-center py-4">
+        <span class="badge bg-danger px-3 py-2 rounded-pill text-uppercase mb-3 fw-bold tracking-wider animate-pulse">
+            <i class="fa-solid fa-bell me-1"></i> Quick Response System
+        </span>
+        <h1 class="display-3 fw-extrabold mb-3 Outfit-font" style="font-weight: 800; font-family: 'Outfit', sans-serif;">
+            Find Emergency Help Near You
+        </h1>
+        <p class="lead text-white-50 mx-auto mb-4" style="max-width: 700px; font-size: 1.25rem;">
+            Quickly locate nearby hospitals, police stations, and fire stations, and navigate with the fastest practical driving routes.
+        </p>
+        <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-2">
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-danger btn-lg px-4 py-3 rounded-pill fw-bold shadow-lg me-sm-2">
+                    <i class="fa-solid fa-map-location-dot me-2"></i> Find Emergency Services
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-danger btn-lg px-4 py-3 rounded-pill fw-bold shadow-lg me-sm-2">
+                    <i class="fa-solid fa-map-location-dot me-2"></i> Find Emergency Services
+                </a>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill fw-bold shadow-sm">
+                    <i class="fa-solid fa-user-plus me-2"></i> Register Account
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Main Emergency Service Cards Section -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-dark Outfit-font">Locate Emergency Assistance Instantly</h2>
+        <p class="text-muted">Choose a service below to start routing to the closest facility</p>
+        <hr class="mx-auto border-danger border-3" style="width: 60px;">
+    </div>
+    
+    <div class="row g-4">
+        <!-- Hospital Card -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-translate p-4 text-center rounded-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle p-3 mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fa-solid fa-square-h fs-1"></i>
+                </div>
+                <h4 class="card-title fw-bold text-dark mb-2">HOSPITALS</h4>
+                <p class="card-text text-muted mb-4">
+                    Find nearby hospitals, emergency rooms, trauma centers, and medical clinics for immediate healthcare needs.
+                </p>
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}?type=Hospital" class="btn btn-danger w-100 py-2 rounded-3 fw-semibold">
+                        <i class="fa-solid fa-search me-1"></i> Find Nearby
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-danger w-100 py-2 rounded-3 fw-semibold">
+                        <i class="fa-solid fa-search me-1"></i> Find Nearby
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Police Station Card -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-translate p-4 text-center rounded-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle p-3 mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fa-solid fa-shield-halved fs-1"></i>
+                </div>
+                <h4 class="card-title fw-bold text-dark mb-2">POLICE STATIONS</h4>
+                <p class="card-text text-muted mb-4">
+                    Locate nearby police stations, precincts, and law enforcement centers during security or safety emergencies.
+                </p>
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}?type=Police" class="btn btn-primary w-100 py-2 rounded-3 fw-semibold">
+                        <i class="fa-solid fa-search me-1"></i> Find Nearby
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-primary w-100 py-2 rounded-3 fw-semibold">
+                        <i class="fa-solid fa-search me-1"></i> Find Nearby
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Fire Station Card -->
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm hover-translate p-4 text-center rounded-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle p-3 mx-auto mb-3" style="width: 80px; height: 80px;">
+                    <i class="fa-solid fa-fire-extinguisher fs-1"></i>
+                </div>
+                <h4 class="card-title fw-bold text-dark mb-2">FIRE STATIONS</h4>
+                <p class="card-text text-muted mb-4">
+                    Find fire department stations and emergency response units quickly during fires, accidents, and rescues.
+                </p>
+                {% if session.get('user_id') %}
+                    <a href="{{ url_for('dashboard') }}?type=Fire" class="btn btn-warning w-100 py-2 rounded-3 fw-semibold text-dark">
+                        <i class="fa-solid fa-search me-1"></i> Find Nearby
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-warning w-100 py-2 rounded-3 fw-semibold text-dark">
+                        <i class="fa-solid fa-search me-1"></i> Find Nearby
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Info Banner Section -->
+<div class="bg-light py-5 border-top border-bottom border-light-subtle">
+    <div class="container py-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <h3 class="fw-bold Outfit-font mb-3">Why Emergency Route System?</h3>
+                <p class="text-muted">During emergencies, every second counts. Finding the nearest help manually on maps can be slow and distracting. Our dashboard handles finding, sorting, and routing in seconds.</p>
+                <div class="d-flex align-items-start mb-3">
+                    <div class="text-danger me-3"><i class="fa-solid fa-circle-check fs-4"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Precise GPS Tracking</h6>
+                        <small class="text-muted">Leverages standard HTML5 Geolocation to center immediately on your location.</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start mb-3">
+                    <div class="text-danger me-3"><i class="fa-solid fa-circle-check fs-4"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Instant Google Places Search</h6>
+                        <small class="text-muted">Fetches exact hospital, police, and fire listings around you.</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start">
+                    <div class="text-danger me-3"><i class="fa-solid fa-circle-check fs-4"></i></div>
+                    <div>
+                        <h6 class="fw-bold mb-1">Real-time Driving Directions</h6>
+                        <small class="text-muted">Plots shortest practical driving routes, distance metrics, and time estimates.</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <div class="card bg-dark border-0 p-4 text-white rounded-4 shadow-lg mx-auto" style="max-width: 450px;">
+                    <h5 class="fw-bold mb-3 Outfit-font text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Quick Emergency Numbers</h5>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover table-borderless text-start align-middle mb-0">
+                            <tbody>
+                                <tr>
+                                    <td><i class="fa-solid fa-square-h text-danger me-2"></i> Ambulance / Medical</td>
+                                    <td class="text-end fw-bold text-danger">102 / 108</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-shield-halved text-primary me-2"></i> Police Department</td>
+                                    <td class="text-end fw-bold text-primary">100</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-fire-extinguisher text-warning me-2"></i> Fire Department</td>
+                                    <td class="text-end fw-bold text-warning">101</td>
+                                </tr>
+                                <tr>
+                                    <td><i class="fa-solid fa-phone-volume text-success me-2"></i> National Emergency</td>
+                                    <td class="text-end fw-bold text-success">112</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

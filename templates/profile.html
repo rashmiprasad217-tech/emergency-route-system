@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - My Profile{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Left Sidebar details -->
+                    <div class="col-md-4 bg-dark text-white text-center p-4 d-flex flex-column justify-content-center align-items-center border-md-end border-danger border-3">
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-4 mb-3 border border-danger border-2" style="width: 100px; height: 100px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fa-solid fa-user-gear fs-1"></i>
+                        </div>
+                        <h4 class="fw-bold mb-1 Outfit-font">{{ user.name }}</h4>
+                        <span class="badge bg-danger mb-3 px-3 py-1.5 rounded-pill text-uppercase">Active User</span>
+                        <hr class="w-70 border-secondary my-3">
+                        <div class="text-white-50 small mb-2">Member Since:</div>
+                        <div class="fw-semibold text-danger mb-0">{{ user.created_at.strftime('%d %b %Y') if user.created_at else 'N/A' }}</div>
+                    </div>
+                    
+                    <!-- Right form content -->
+                    <div class="col-md-8 p-4 p-md-5 bg-white">
+                        <h3 class="fw-bold text-dark Outfit-font mb-4">Edit Profile</h3>
+                        
+                        <form action="{{ url_for('profile') }}" method="POST" id="profileForm" class="needs-validation" novalidate>
+                            
+                            <!-- Email (Read-Only) -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold text-muted">Email Address (Cannot change)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-envelope"></i></span>
+                                    <input type="email" class="form-control bg-light border-start-0 py-2" value="{{ user.email }}" readonly disabled>
+                                </div>
+                            </div>
+                            
+                            <!-- Name -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-semibold text-muted">Full Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-user"></i></span>
+                                    <input type="text" class="form-control bg-light border-start-0 py-2" id="name" name="name" value="{{ user.name }}" required>
+                                    <div class="invalid-feedback">Please enter your name.</div>
+                                </div>
+                            </div>
+
+                            <!-- Phone -->
+                            <div class="mb-4">
+                                <label for="phone" class="form-label fw-semibold text-muted">Phone Number</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-phone"></i></span>
+                                    <input type="tel" class="form-control bg-light border-start-0 py-2" id="phone" name="phone" value="{{ user.phone }}" pattern="[0-9]{10,15}" required>
+                                    <div class="invalid-feedback">Please enter a valid phone number.</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+                            <h5 class="fw-bold text-dark Outfit-font mb-3"><i class="fa-solid fa-key text-danger me-2"></i>Change Password (Optional)</h5>
+                            
+                            <div class="row">
+                                <div class="col-sm-6 mb-3">
+                                    <label for="new_password" class="form-label fw-semibold text-muted">New Password</label>
+                                    <input type="password" class="form-control bg-light py-2" id="new_password" name="new_password" placeholder="Leave blank to keep current" minlength="6">
+                                    <div class="invalid-feedback">Password must be at least 6 characters.</div>
+                                </div>
+                                <div class="col-sm-6 mb-4">
+                                    <label for="confirm_password" class="form-label fw-semibold text-muted">Confirm Password</label>
+                                    <input type="password" class="form-control bg-light py-2" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+                                    <div class="invalid-feedback" id="confirm_feedback">Passwords must match.</div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-danger py-2.5 px-4 fw-bold rounded-3 shadow-sm">
+                                <i class="fa-solid fa-floppy-disk me-1"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById('profileForm');
+        var newPassword = document.getElementById('new_password');
+        var confirmPassword = document.getElementById('confirm_password');
+        var confirmFeedback = document.getElementById('confirm_feedback');
+        
+        form.addEventListener('submit', function(event) {
+            // Only validate password matching if the user has typed a new password
+            if (newPassword.value) {
+                if (newPassword.value !== confirmPassword.value) {
+                    confirmPassword.setCustomValidity("Passwords do not match");
+                    confirmFeedback.textContent = "Passwords do not match!";
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    confirmPassword.setCustomValidity("");
+                }
+            } else {
+                confirmPassword.setCustomValidity("");
+            }
+            
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+
+        confirmPassword.addEventListener('input', function() {
+            if (!newPassword.value || newPassword.value === confirmPassword.value) {
+                confirmPassword.setCustomValidity("");
+            } else {
+                confirmPassword.setCustomValidity("Passwords do not match");
+            }
+        });
+    });
+</script>
+{% endblock %}

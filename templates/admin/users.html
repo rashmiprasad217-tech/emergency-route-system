@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - Manage Users{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+        <div class="bg-dark text-white p-4 d-flex justify-content-between align-items-center border-bottom border-danger border-3">
+            <div>
+                <h2 class="fw-bold mb-1 Outfit-font"><i class="fa-solid fa-users text-danger me-2"></i>User Account Management</h2>
+                <p class="text-white-50 small mb-0">Total active users registered in the system database</p>
+            </div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+        
+        <div class="card-body p-0 bg-white">
+            {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" class="ps-4">User ID</th>
+                                <th scope="col">Full Name</th>
+                                <th scope="col">Email Address</th>
+                                <th scope="col">Phone Number</th>
+                                <th scope="col">Registered On</th>
+                                <th scope="col" class="pe-4 text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                                <tr>
+                                    <td class="ps-4 fw-semibold text-secondary">#{{ user.id }}</td>
+                                    <td><strong class="text-dark">{{ user.name }}</strong></td>
+                                    <td><code class="text-secondary" style="font-size: 0.9rem;">{{ user.email }}</code></td>
+                                    <td>{{ user.phone }}</td>
+                                    <td class="small text-muted">{{ user.created_at.strftime('%d %b %Y, %I:%M %p') if user.created_at else 'N/A' }}</td>
+                                    <td class="pe-4 text-end">
+                                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="POST" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete user account \'{{ user.name }}\'? All search history and route logs will be permanently deleted via cascade logic.');" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-3 py-1 px-3">
+                                                <i class="fa-solid fa-trash-can me-1"></i> Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 my-4">
+                    <i class="fa-solid fa-users-slash text-secondary display-3 mb-3"></i>
+                    <h5 class="fw-bold text-dark">No users registered</h5>
+                    <p class="text-muted">The user database table is currently empty.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

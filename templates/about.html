@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - About Us{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row align-items-center mb-5 g-5">
+        <div class="col-lg-6">
+            <h1 class="display-5 fw-extrabold text-dark Outfit-font mb-3">About The Project</h1>
+            <p class="lead text-muted mb-4">
+                The Emergency Route System is a final-year web application built to address critical navigation and routing delays during urgent emergencies.
+            </p>
+            <p class="text-muted mb-4">
+                By leveraging real-time browser GPS geolocation and integrating the Google Maps Platform (JavaScript API, Places API, and Directions API), the system dynamically determines a user's position, identifies nearby critical help centres (Hospitals, Police Stations, and Fire Stations), and plots the fastest driving path with exact metrics for distance and transit duration.
+            </p>
+            <div class="row g-3">
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded-3 shadow-sm">
+                        <i class="fa-solid fa-clock-rotate-left text-danger fs-3 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Save Time</h6>
+                            <small class="text-muted">Instant calculations</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="d-flex align-items-center p-3 bg-white rounded-3 shadow-sm">
+                        <i class="fa-solid fa-map-location-dot text-success fs-3 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-0">Dynamic Map</h6>
+                            <small class="text-muted">Visual routing</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="card-body bg-dark text-white p-5">
+                    <h4 class="fw-bold text-danger Outfit-font mb-4"><i class="fa-solid fa-list-check me-2"></i>Core System Objectives</h4>
+                    
+                    <div class="d-flex align-items-start mb-4">
+                        <span class="badge bg-danger rounded-circle p-2 me-3" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;">1</span>
+                        <div>
+                            <h6 class="fw-bold mb-1">Locate Emergency Facilities</h6>
+                            <p class="text-white-50 small mb-0">Accurately list and identify active emergency hubs within direct radius of the user.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-start mb-4">
+                        <span class="badge bg-danger rounded-circle p-2 me-3" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;">2</span>
+                        <div>
+                            <h6 class="fw-bold mb-1">Provide Precise Routing</h6>
+                            <p class="text-white-50 small mb-0">Calculate accurate step-by-step paths using active Google Maps Directions services.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start mb-4">
+                        <span class="badge bg-danger rounded-circle p-2 me-3" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;">3</span>
+                        <div>
+                            <h6 class="fw-bold mb-1">Audit Search &amp; Route History</h6>
+                            <p class="text-white-50 small mb-0">Let users save, track, and audit their recent routes, while giving admins comprehensive system metrics.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-start">
+                        <span class="badge bg-danger rounded-circle p-2 me-3" style="width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center;">4</span>
+                        <div>
+                            <h6 class="fw-bold mb-1">High Accessibility</h6>
+                            <p class="text-white-50 small mb-0">Offer a fully responsive mobile-first portal optimized for rapid interaction on any handheld screen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tech Stack Summary -->
+    <div class="text-center my-5">
+        <h3 class="fw-bold Outfit-font text-dark mb-4">Built with Modern Open-Source Technologies</h3>
+        <div class="row g-3 justify-content-center">
+            <div class="col-6 col-sm-4 col-md-2">
+                <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                    <i class="fa-brands fa-python text-primary fs-2 mb-2"></i>
+                    <h6 class="fw-bold mb-0">Python</h6>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                    <i class="fa-solid fa-leaf text-success fs-2 mb-2"></i>
+                    <h6 class="fw-bold mb-0">Flask</h6>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                    <i class="fa-solid fa-server text-success fs-2 mb-2"></i>
+                    <h6 class="fw-bold mb-0">MongoDB</h6>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                    <i class="fa-brands fa-bootstrap text-purple fs-2 mb-2" style="color: #563d7c;"></i>
+                    <h6 class="fw-bold mb-0">Bootstrap 5</h6>
+                </div>
+            </div>
+            <div class="col-6 col-sm-4 col-md-2">
+                <div class="p-3 bg-white rounded-3 shadow-sm text-center">
+                    <i class="fa-solid fa-map-location-dot text-info fs-2 mb-2"></i>
+                    <h6 class="fw-bold mb-0">Google Maps</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-3 border-bottom border-danger border-2">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center fw-bold text-uppercase tracking-wider" href="/">
+            <i class="fa-solid fa-truck-medical text-danger fs-3 me-2"></i>
+            <span class="text-white">Emergency</span><span class="text-danger">Route</span>
+        </a>
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Left aligned links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if session.get('admin_id') %}
+                    <!-- Admin Links -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('admin_dashboard') %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">
+                            <i class="fa-solid fa-gauge me-1"></i> Admin Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('admin_users') %}active{% endif %}" href="{{ url_for('admin_users') }}">
+                            <i class="fa-solid fa-users me-1"></i> Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('admin_search_history') %}active{% endif %}" href="{{ url_for('admin_search_history') }}">
+                            <i class="fa-solid fa-history me-1"></i> Searches
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('admin_route_history') %}active{% endif %}" href="{{ url_for('admin_route_history') }}">
+                            <i class="fa-solid fa-route me-1"></i> Routes
+                        </a>
+                    </li>
+                {% elif session.get('user_id') %}
+                    <!-- Logged-in User Links -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('dashboard') %}active{% endif %}" href="{{ url_for('dashboard') }}">
+                            <i class="fa-solid fa-map-location-dot me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('search_history') %}active{% endif %}" href="{{ url_for('search_history') }}">
+                            <i class="fa-solid fa-magnifying-glass-location me-1"></i> My Searches
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('route_history') %}active{% endif %}" href="{{ url_for('route_history') }}">
+                            <i class="fa-solid fa-directions me-1"></i> My Routes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('profile') %}active{% endif %}" href="{{ url_for('profile') }}">
+                            <i class="fa-solid fa-user me-1"></i> Profile
+                        </a>
+                    </li>
+                {% else %}
+                    <!-- Public Guest Links -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                            <i class="fa-solid fa-house me-1"></i> Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('about') %}active{% endif %}" href="{{ url_for('about') }}">
+                            <i class="fa-solid fa-circle-info me-1"></i> About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == url_for('contact') %}active{% endif %}" href="{{ url_for('contact') }}">
+                            <i class="fa-solid fa-envelope me-1"></i> Contact
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Right aligned buttons -->
+            <div class="d-flex align-items-center">
+                {% if session.get('admin_id') %}
+                    <span class="text-white-50 me-3 small">
+                        <i class="fa-solid fa-user-shield text-danger me-1"></i> Admin: <strong>{{ session.get('admin_username') }}</strong>
+                    </span>
+                    <a href="{{ url_for('admin_logout') }}" class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-semibold">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                    </a>
+                {% elif session.get('user_id') %}
+                    <span class="text-white-50 me-3 small">
+                        <i class="fa-solid fa-circle-user text-success me-1"></i> Hello, <strong>{{ session.get('user_name') }}</strong>
+                    </span>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm px-3 rounded-pill fw-semibold">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-sm px-3 rounded-pill fw-semibold me-2">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Log In
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-danger btn-sm px-3 rounded-pill fw-semibold me-2 shadow-sm">
+                        <i class="fa-solid fa-user-plus me-1"></i> Register
+                    </a>
+                    <a href="{{ url_for('admin_login') }}" class="btn btn-outline-secondary btn-sm px-2 py-1 rounded-pill text-white-50 border-secondary" style="font-size: 0.8rem;">
+                        <i class="fa-solid fa-user-gear"></i> Admin
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

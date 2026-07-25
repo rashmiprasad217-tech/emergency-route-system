@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - User Search Logs{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-dark Outfit-font mb-3"><i class="fa-solid fa-filter text-danger me-2"></i>Filter Logs</h5>
+            <form action="{{ url_for('admin_search_history') }}" method="GET" class="row g-3">
+                <div class="col-md-5">
+                    <label for="type" class="form-label small fw-semibold text-muted">Emergency Category</label>
+                    <select class="form-select py-2" id="type" name="type">
+                        <option value="">-- All Categories --</option>
+                        <option value="Hospital" {% if selected_type == 'Hospital' %}selected{% endif %}>Hospital</option>
+                        <option value="Police" {% if selected_type == 'Police' %}selected{% endif %}>Police Station</option>
+                        <option value="Fire" {% if selected_type == 'Fire' %}selected{% endif %}>Fire Station</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="date" class="form-label small fw-semibold text-muted">Search Date</label>
+                    <input type="date" class="form-control py-2" id="date" name="date" value="{{ selected_date }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="w-100 d-grid gap-2">
+                        <button type="submit" class="btn btn-danger py-2 fw-semibold rounded-3">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Apply
+                        </button>
+                    </div>
+                </div>
+            </form>
+            {% if selected_type or selected_date %}
+                <div class="mt-3">
+                    <a href="{{ url_for('admin_search_history') }}" class="btn btn-link text-danger text-decoration-none p-0 small">
+                        <i class="fa-solid fa-circle-xmark me-1"></i> Clear active filters
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Search Logs List Card -->
+    <div class="card border-0 shadow rounded-4 overflow-hidden">
+        <div class="bg-dark text-white p-4 d-flex justify-content-between align-items-center border-bottom border-danger border-3">
+            <div>
+                <h2 class="fw-bold mb-1 Outfit-font"><i class="fa-solid fa-history text-danger me-2"></i>System Search Logs</h2>
+                <p class="text-white-50 small mb-0">Audit log of all emergency searches executed by users</p>
+            </div>
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+            </a>
+        </div>
+        
+        <div class="card-body p-0 bg-white">
+            {% if history %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th scope="col" class="ps-4">Log ID</th>
+                                <th scope="col">User</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Target GPS Coordinates</th>
+                                <th scope="col" class="pe-4">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in history %}
+                                <tr>
+                                    <td class="ps-4 fw-semibold text-secondary">#{{ log.id }}</td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ log.name }}</div>
+                                        <small class="text-muted">{{ log.email }}</small>
+                                    </td>
+                                    <td>
+                                        {% if log.emergency_type == 'Hospital' %}
+                                            <span class="badge bg-danger px-3 py-1.5 rounded-pill"><i class="fa-solid fa-square-h me-1"></i> Hospital</span>
+                                        {% elif log.emergency_type == 'Police' %}
+                                            <span class="badge bg-primary px-3 py-1.5 rounded-pill"><i class="fa-solid fa-shield-halved me-1"></i> Police</span>
+                                        {% else %}
+                                            <span class="badge bg-warning text-dark px-3 py-1.5 rounded-pill"><i class="fa-solid fa-fire-extinguisher me-1"></i> Fire</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <code class="bg-light p-2 rounded text-dark" style="font-size: 0.85rem;">
+                                            {{ log.latitude }}, {{ log.longitude }}
+                                        </code>
+                                    </td>
+                                    <td class="pe-4 text-muted small">
+                                        {{ log.searched_at.strftime('%d %b %Y, %I:%M %p') if log.searched_at else 'N/A' }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5 my-4">
+                    <i class="fa-solid fa-magnifying-glass-location text-secondary display-3 mb-3"></i>
+                    <h5 class="fw-bold text-dark">No logs found</h5>
+                    <p class="text-muted mb-0">No search activity logs match the selected filters.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

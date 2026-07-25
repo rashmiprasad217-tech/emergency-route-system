@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - User Login{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="bg-dark text-white text-center py-4 px-3 border-bottom border-danger border-3">
+                    <i class="fa-solid fa-circle-user text-danger fs-1 mb-2"></i>
+                    <h3 class="fw-bold mb-0 Outfit-font">User Sign In</h3>
+                    <p class="text-white-50 small mb-0">Enter your credentials to access the emergency route finder</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form action="{{ url_for('login') }}" method="POST" class="needs-validation" novalidate>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold text-muted">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" class="form-control bg-light border-start-0 py-2" id="email" name="email" placeholder="name@example.com" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold text-muted">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-lock"></i></span>
+                                <input type="password" class="form-control bg-light border-start-0 py-2" id="password" name="password" placeholder="••••••••" required>
+                                <div class="invalid-feedback">Please enter your password.</div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger w-100 py-2.5 fw-bold rounded-3 shadow-sm mb-3">
+                            <i class="fa-solid fa-right-to-bracket me-2"></i> Log In
+                        </button>
+                        
+                        <div class="text-center">
+                            <span class="text-muted small">Don't have an account? <a href="{{ url_for('register') }}" class="text-danger fw-semibold decoration-none">Register here</a></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Quick Admin Access link -->
+            <div class="text-center mt-3">
+                <a href="{{ url_for('admin_login') }}" class="text-muted small text-decoration-none hover-danger">
+                    <i class="fa-solid fa-user-shield me-1"></i> Access Admin Portal
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enable Bootstrap validation styles on form submission
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+</script>
+{% endblock %}

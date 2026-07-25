@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Emergency Route System - User Registration{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+            <div class="card border-0 shadow rounded-4 overflow-hidden">
+                <div class="bg-dark text-white text-center py-4 px-3 border-bottom border-danger border-3">
+                    <i class="fa-solid fa-user-plus text-danger fs-1 mb-2"></i>
+                    <h3 class="fw-bold mb-0 Outfit-font">Create Account</h3>
+                    <p class="text-white-50 small mb-0">Register to map emergency routes and save your search logs</p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5 bg-white">
+                    <form action="{{ url_for('register') }}" method="POST" id="registrationForm" class="needs-validation" novalidate>
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label fw-semibold text-muted">Full Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" class="form-control bg-light border-start-0 py-2" id="name" name="name" placeholder="John Doe" required>
+                                <div class="invalid-feedback">Please enter your full name.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold text-muted">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" class="form-control bg-light border-start-0 py-2" id="email" name="email" placeholder="john@example.com" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label fw-semibold text-muted">Phone Number</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-phone"></i></span>
+                                <input type="tel" class="form-control bg-light border-start-0 py-2" id="phone" name="phone" placeholder="9876543210" pattern="[0-9]{10,15}" required>
+                                <div class="invalid-feedback">Please enter a valid phone number (10 to 15 digits).</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-sm-6 mb-3">
+                                <label for="password" class="form-label fw-semibold text-muted">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-lock"></i></span>
+                                    <input type="password" class="form-control bg-light border-start-0 py-2" id="password" name="password" placeholder="••••••••" minlength="6" required>
+                                    <div class="invalid-feedback">Password must be at least 6 characters.</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-sm-6 mb-4">
+                                <label for="confirm_password" class="form-label fw-semibold text-muted">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted border-end-0"><i class="fa-solid fa-lock"></i></span>
+                                    <input type="password" class="form-control bg-light border-start-0 py-2" id="confirm_password" name="confirm_password" placeholder="••••••••" required>
+                                    <div class="invalid-feedback" id="confirm_feedback">Please confirm your password.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger w-100 py-2.5 fw-bold rounded-3 shadow-sm mb-3">
+                            <i class="fa-solid fa-user-plus me-2"></i> Register
+                        </button>
+                        
+                        <div class="text-center">
+                            <span class="text-muted small">Already have an account? <a href="{{ url_for('login') }}" class="text-danger fw-semibold decoration-none">Login here</a></span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Client-side passwords match validation
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById('registrationForm');
+        var password = document.getElementById('password');
+        var confirm = document.getElementById('confirm_password');
+        var confirmFeedback = document.getElementById('confirm_feedback');
+        
+        form.addEventListener('submit', function(event) {
+            if (password.value !== confirm.value) {
+                confirm.setCustomValidity("Passwords do not match");
+                confirmFeedback.textContent = "Passwords do not match!";
+                event.preventDefault();
+                event.stopPropagation();
+            } else {
+                confirm.setCustomValidity("");
+            }
+            
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+        
+        confirm.addEventListener('input', function() {
+            if (password.value === confirm.value) {
+                confirm.setCustomValidity("");
+            } else {
+                confirm.setCustomValidity("Passwords do not match");
+            }
+        });
+    });
+</script>
+{% endblock %}
