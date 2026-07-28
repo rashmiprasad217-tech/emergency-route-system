@@ -303,7 +303,8 @@ function forceLeafletFallback() {
     const loader = document.getElementById('map-loader');
     if (loader) loader.style.display = 'none';
 
-    // Reset container to clear any broken third-party map elements
+    // Reset container and global map object to clear any broken map state
+    window.map = null;
     const mapContainer = document.getElementById('map-container');
     if (mapContainer) {
         mapContainer.innerHTML = '<div id="map" style="height: 500px; width: 100%; position: relative; z-index: 1;"></div>';
@@ -338,12 +339,13 @@ window.gm_authFailure = function() {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Safety check: If Google Maps doesn't initialize within 2 seconds, switch to Leaflet
+    // Safety check: If Google Maps doesn't fully initialize within 1.2 seconds, automatically switch to Leaflet
     setTimeout(function() {
-        if (!googleMapInitialized && typeof google === 'undefined') {
+        if (!googleMapInitialized) {
+            console.warn("Google Maps initialization timeout. Triggering OpenStreetMap Leaflet fallback.");
             forceLeafletFallback();
         }
-    }, 2000);
+    }, 1200);
 });
 </script>
 

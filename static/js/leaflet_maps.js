@@ -31,8 +31,18 @@ function initLeafletMap() {
         return;
     }
 
-    // Guard against multiple initializations
-    if (map) return;
+    // Guard against multiple initializations on the same DOM element
+    if (map) {
+        try {
+            if (map._container && document.body.contains(map._container)) {
+                return;
+            } else {
+                map.remove();
+            }
+        } catch(e) {
+            map = null;
+        }
+    }
 
     // Ensure the map container has proper dimensions before initialization
     const mapEl = document.getElementById('map');
