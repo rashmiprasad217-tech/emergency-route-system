@@ -63,10 +63,11 @@ function initLeafletMap() {
         zoomControl: true
     });
 
-    // Add OpenStreetMap tile layer (100% Free)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Add CartoDB Voyager high-speed tile layer (100% Free - Cloudflare CDN backed)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
 
     // Force Leaflet to recalculate container size and load tiles correctly
@@ -130,7 +131,10 @@ function detectUserLocation(showToast = false) {
             userLng = position.coords.longitude;
             isLocationDetected = true;
 
-            if (map) map.setView([userLat, userLng], 15);
+            if (map) {
+                map.setView([userLat, userLng], 15);
+                map.invalidateSize();
+            }
 
             if (userMarker && map) map.removeLayer(userMarker);
 
