@@ -144,17 +144,30 @@ function detectUserLocation(showToast = false) {
             }
         },
         function(error) {
-            let errorMsg = "Unable to detect live GPS location. Using default location area.";
+            let errorMsg = "Using default location area. Click 'Use My Current Location' above to detect GPS.";
             if (error.code === error.PERMISSION_DENIED) {
-                errorMsg = "Location permission denied or blocked. Using default map area.";
+                errorMsg = "Location blocked in browser. Click the lock icon (🔒) near the site URL to allow location access.";
             }
             updateLocationStatus(errorMsg, "warning");
             if (showToast) showAlert(errorMsg, "warning");
 
-            // Fallback so application remains 100% usable
+            // Ensure map view & default location marker are ALWAYS active
             isLocationDetected = true;
+            if (map) {
+                map.setView([userLat, userLng], 14);
+                if (!userMarker) {
+                    const userIcon = L.divIcon({
+                        className: 'custom-user-marker',
+                        html: '<div style="background-color: #0d6efd; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(13,110,253,0.8);"></div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    });
+                    userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+                    userMarker.bindPopup("<strong>Default Emergency Area</strong>");
+                }
+            }
         },
-        { enableHighAccuracy: false, timeout: 6000, maximumAge: 60000 }
+        { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
     );
 }
 
