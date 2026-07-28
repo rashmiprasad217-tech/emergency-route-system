@@ -291,48 +291,72 @@
 
 {% block scripts %}
 <script>
-// Universal Safety & Location Permission Controller
-document.addEventListener("DOMContentLoaded", function() {
-    // 1. Force location permission prompt from browser automatically
-    setTimeout(function() {
-        if (typeof detectUserLocation === 'function') {
-            detectUserLocation(false);
-        }
-    }, 400);
+let googleMapInitialized = false;
 
-    // 2. Safety overlay hide timer: Never leave user stuck on loading spinner
-    setTimeout(function() {
-        const loader = document.getElementById('map-loader');
-        if (loader && loader.style.display !== 'none') {
-            console.warn("Map loader safety timeout reached. Dismissing overlay.");
-            loader.style.display = 'none';
-        }
-    }, 1800);
-});
-
-// Auto-fallback if Google Maps authentication fails due to invalid key
-window.gm_authFailure = function() {
-    console.warn("Google Maps Key Auth Failed. Auto-switching to OpenStreetMap/Leaflet...");
+// Force robust fallback to free OpenStreetMap Leaflet Engine
+function forceLeafletFallback() {
+    if (window.leafletFallbackActive) return;
+    window.leafletFallbackActive = true;
+    
+    console.warn("Switching to 100% Free OpenStreetMap & Leaflet Map Engine...");
+    
     const loader = document.getElementById('map-loader');
     if (loader) loader.style.display = 'none';
 
-    if (typeof initLeafletMap === 'function') {
-        initLeafletMap();
-    } else {
-        const s1 = document.createElement('script');
-        s1.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-        s1.onload = function() {
+    // Reset container to clear any broken third-party map elements
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer) {
+        mapContainer.innerHTML = '<div id="map" style="height: 500px; width: 100%; position: relative; z-index: 1;"></div>';
+    }
+
+    function launchLeaflet() {
+        if (typeof initLeafletMap === 'function') {
+            initLeafletMap();
+        } else {
             const s2 = document.createElement('script');
             s2.src = "{{ url_for('static', filename='js/leaflet_maps.js') }}";
+            s2.onload = function() {
+                if (typeof initLeafletMap === 'function') initLeafletMap();
+            };
             document.body.appendChild(s2);
-        };
-        document.body.appendChild(s1);
+        }
     }
+
+    if (typeof L === 'undefined') {
+        const s1 = document.createElement('script');
+        s1.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        s1.onload = launchLeaflet;
+        document.body.appendChild(s1);
+    } else {
+        launchLeaflet();
+    }
+}
+
+// Hook Google Maps authentication failure to force Leaflet fallback
+window.gm_authFailure = function() {
+    forceLeafletFallback();
 };
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Safety check: If Google Maps doesn't initialize within 2 seconds, switch to Leaflet
+    setTimeout(function() {
+        if (!googleMapInitialized && typeof google === 'undefined') {
+            forceLeafletFallback();
+        }
+    }, 2000);
+});
 </script>
 
 {% if maps_key and maps_key.startswith('AIzaSy') %}
     <!-- Google Maps Engine -->
+    <script>
+        // Track whether Google Maps callback executes
+        const originalInitMap = window.initMap;
+        window.initMap = function() {
+            googleMapInitialized = true;
+            if (typeof originalInitMap === 'function') originalInitMap();
+        };
+    </script>
     <script src="{{ url_for('static', filename='js/maps.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key={{ maps_key }}&libraries=places&callback=initMap" async defer></script>
 {% else %}
