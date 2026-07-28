@@ -290,6 +290,47 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+// Universal Safety & Location Permission Controller
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Force location permission prompt from browser automatically
+    setTimeout(function() {
+        if (typeof detectUserLocation === 'function') {
+            detectUserLocation(false);
+        }
+    }, 400);
+
+    // 2. Safety overlay hide timer: Never leave user stuck on loading spinner
+    setTimeout(function() {
+        const loader = document.getElementById('map-loader');
+        if (loader && loader.style.display !== 'none') {
+            console.warn("Map loader safety timeout reached. Dismissing overlay.");
+            loader.style.display = 'none';
+        }
+    }, 1800);
+});
+
+// Auto-fallback if Google Maps authentication fails due to invalid key
+window.gm_authFailure = function() {
+    console.warn("Google Maps Key Auth Failed. Auto-switching to OpenStreetMap/Leaflet...");
+    const loader = document.getElementById('map-loader');
+    if (loader) loader.style.display = 'none';
+
+    if (typeof initLeafletMap === 'function') {
+        initLeafletMap();
+    } else {
+        const s1 = document.createElement('script');
+        s1.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        s1.onload = function() {
+            const s2 = document.createElement('script');
+            s2.src = "{{ url_for('static', filename='js/leaflet_maps.js') }}";
+            document.body.appendChild(s2);
+        };
+        document.body.appendChild(s1);
+    }
+};
+</script>
+
 {% if maps_key and maps_key.startswith('AIzaSy') %}
     <!-- Google Maps Engine -->
     <script src="{{ url_for('static', filename='js/maps.js') }}"></script>

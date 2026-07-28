@@ -18,14 +18,21 @@ let currentSearchType = '';
 function initLeafletMap() {
     console.log("Leaflet.js & OpenStreetMap loading...");
 
-    // Guard against multiple initializations
-    if (map) return;
-
-    // Hide the loading overlay
+    // Hide the loading overlay immediately
     const mapLoader = document.getElementById('map-loader');
     if (mapLoader) {
         mapLoader.style.display = 'none';
     }
+
+    // If Leaflet library is not loaded yet, retry shortly
+    if (typeof L === 'undefined') {
+        console.warn("Leaflet object L is not loaded yet. Retrying initialization...");
+        setTimeout(initLeafletMap, 150);
+        return;
+    }
+
+    // Guard against multiple initializations
+    if (map) return;
 
     // Ensure the map container has proper dimensions before initialization
     const mapEl = document.getElementById('map');
