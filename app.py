@@ -15,8 +15,11 @@ app.config.from_object(Config)
 # ==================================================
 # DATABASE UTILITIES
 # ==================================================
+_INDEXES_CREATED = False
+
 def get_db():
     """Opens a new MongoDB client connection if there is none yet for the current application context."""
+    global _INDEXES_CREATED
     if 'db' not in g:
         mongo_uri = app.config.get('MONGO_URI', '')
         if 'mongodb+srv://' in mongo_uri and 'tlsAllowInvalidCertificates' not in mongo_uri:
@@ -41,18 +44,17 @@ def get_db():
         except Exception:
             g.db = g.client['emergency_route_system']
             
-        # Test connection instantly to trigger error if server is offline
-        g.client.server_info()
-
-        # Ensure database indexes exist for optimized querying
-        try:
-            g.db.users.create_index("email", unique=True)
-            g.db.search_history.create_index("user_id")
-            g.db.search_history.create_index("searched_at")
-            g.db.route_history.create_index("user_id")
-            g.db.route_history.create_index("created_at")
-        except Exception:
-            pass  # Non-blocking if index creation fails
+        # Ensure database indexes exist once per process worker
+        if not _INDEXES_CREATED:
+            try:
+                g.db.users.create_index("email", unique=True)
+                g.db.search_history.create_index("user_id")
+                g.db.search_history.create_index("searched_at")
+                g.db.route_history.create_index("user_id")
+                g.db.route_history.create_index("created_at")
+                _INDEXES_CREATED = True
+            except Exception:
+                pass
 
     return g.db
 

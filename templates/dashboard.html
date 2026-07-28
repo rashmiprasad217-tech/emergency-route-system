@@ -4,7 +4,7 @@
 
 {% block head %}
 <!-- Leaflet CSS for Open-Source Map Engine -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 <!-- Custom dashboard styles -->
 <style>
     .service-card {
@@ -324,7 +324,7 @@ function forceLeafletFallback() {
 
     if (typeof L === 'undefined') {
         const s1 = document.createElement('script');
-        s1.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
         s1.onload = launchLeaflet;
         document.body.appendChild(s1);
     } else {
@@ -361,7 +361,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <script src="https://maps.googleapis.com/maps/api/js?key={{ maps_key }}&libraries=places&callback=initMap" async defer></script>
 {% else %}
     <!-- Open-Source Leaflet & OpenStreetMap Engine (100% Free - No Key Required) -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script src="{{ url_for('static', filename='js/leaflet_maps.js') }}"></script>
 {% endif %}
 {% endblock %}
