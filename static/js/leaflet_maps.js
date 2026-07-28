@@ -18,14 +18,26 @@ let currentSearchType = '';
 function initLeafletMap() {
     console.log("Leaflet.js & OpenStreetMap loading...");
 
-    const mapLoader = document.getElementById('map-loader');
-    if (mapLoader) {
-        mapLoader.style.opacity = '0';
-        setTimeout(() => mapLoader.style.display = 'none', 300);
-    }
-
     // Guard against multiple initializations
     if (map) return;
+
+    // Hide the loading overlay
+    const mapLoader = document.getElementById('map-loader');
+    if (mapLoader) {
+        mapLoader.style.display = 'none';
+    }
+
+    // Ensure the map container has proper dimensions before initialization
+    const mapEl = document.getElementById('map');
+    if (!mapEl) {
+        console.error("Map container #map not found!");
+        return;
+    }
+
+    // Force minimum height if not already set
+    if (mapEl.offsetHeight < 100) {
+        mapEl.style.height = '500px';
+    }
 
     // Initialize Leaflet map
     map = L.map('map', {
@@ -39,6 +51,17 @@ function initLeafletMap() {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
+
+    // Force Leaflet to recalculate container size and load tiles correctly
+    // This is critical when the map is inside a container that was hidden or overlayed
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 200);
+
+    // Second invalidateSize for slower connections / late layout shifts
+    setTimeout(function() {
+        map.invalidateSize();
+    }, 1000);
 
     // Initial default User marker icon
     const userIcon = L.divIcon({
