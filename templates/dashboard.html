@@ -4,7 +4,7 @@
 
 {% block head %}
 <!-- Leaflet CSS for Open-Source Map Engine -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}" />
 <!-- Custom dashboard styles -->
 <style>
     .service-card {
@@ -291,7 +291,7 @@
 
 {% block scripts %}
 <!-- 100% Free Open-Source Leaflet & OpenStreetMap Map Engine -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
 <script src="{{ url_for('static', filename='js/leaflet_maps.js') }}?v={{ range(1, 100000) | random }}"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
