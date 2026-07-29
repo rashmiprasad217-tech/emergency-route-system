@@ -144,7 +144,7 @@
 
     <!-- Main Map and List Area -->
     <div class="row g-4 mb-5">
-        <!-- Google Map Container Column -->
+        <!-- Leaflet Map Container Column -->
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
@@ -294,13 +294,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="{{ url_for('static', filename='js/leaflet_maps.js') }}"></script>
 <script>
-// Safety check to guarantee loader is hidden under all circumstances
 document.addEventListener("DOMContentLoaded", function() {
-    setTimeout(function() {
-        const mapLoader = document.getElementById('map-loader');
-        if (mapLoader) mapLoader.style.display = 'none';
-        if (typeof initLeafletMap === 'function') initLeafletMap();
-    }, 300);
+    console.log('[Dashboard] DOMContentLoaded fired. Waiting for Leaflet...');
+    
+    var mapInitAttempts = 0;
+    var maxAttempts = 50; // 50 * 100ms = 5s
+
+    function tryInitMap() {
+        mapInitAttempts++;
+        if (typeof L !== 'undefined' && typeof initLeafletMap === 'function') {
+            console.log('[Dashboard] Leaflet loaded. Initializing map...');
+            initLeafletMap();
+        } else if (mapInitAttempts < maxAttempts) {
+            setTimeout(tryInitMap, 100);
+        } else {
+            console.error('[Dashboard] Leaflet failed to load.');
+            var mapLoaderText = document.getElementById('map-loader-text');
+            if (mapLoaderText) {
+                mapLoaderText.innerHTML = '<span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Map library failed to load. Check your internet and refresh.</span>';
+            }
+        }
+    }
+    
+    tryInitMap();
 });
 </script>
 {% endblock %}
