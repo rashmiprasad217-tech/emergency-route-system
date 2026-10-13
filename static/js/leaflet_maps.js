@@ -14,20 +14,23 @@ let currentSearchType = '';
 
 /**
  * Entry Point for Leaflet Map Initialization
+ * Called ONLY from dashboard.html after window.load (all resources ready)
  */
 function initLeafletMap() {
-    console.log("Leaflet.js & OpenStreetMap loading...");
+    console.log("[Map] Starting Leaflet map initialization...");
 
-    // Hide the loading overlay immediately
-    const mapLoader = document.getElementById('map-loader');
-    if (mapLoader) {
-        mapLoader.style.display = 'none';
+    // Check Leaflet library is loaded
+    if (typeof L === 'undefined') {
+        console.error("[Map] Leaflet library (L) is not loaded. Map cannot start.");
+        showMapError("Map library failed to load. Please check your internet connection and refresh.");
+        return;
     }
 
-    // If Leaflet library is not loaded yet, retry shortly
-    if (typeof L === 'undefined') {
-        console.warn("Leaflet object L is not loaded yet. Retrying initialization...");
-        setTimeout(initLeafletMap, 150);
+    // Check map container exists
+    const mapEl = document.getElementById('map');
+    if (!mapEl) {
+        console.error("[Map] Map container #map not found in DOM!");
+        showMapError("Map container missing. Please refresh the page.");
         return;
     }
 
@@ -35,80 +38,108 @@ function initLeafletMap() {
     if (map) {
         try {
             if (map._container && document.body.contains(map._container)) {
+                console.log("[Map] Already initialized, skipping.");
                 return;
             } else {
                 map.remove();
+                map = null;
             }
         } catch(e) {
             map = null;
         }
     }
 
-    // Ensure the map container has proper dimensions before initialization
-    const mapEl = document.getElementById('map');
-    if (!mapEl) {
-        console.error("Map container #map not found!");
-        return;
-    }
-
-    // Force minimum height if not already set
+    // Force minimum height if CSS hasn't been applied yet
     if (mapEl.offsetHeight < 100) {
         mapEl.style.height = '500px';
     }
 
-    // Initialize Leaflet map
-    map = L.map('map', {
-        center: [userLat, userLng],
-        zoom: 14,
-        zoomControl: true
-    });
-
-    // Add CartoDB Voyager high-speed tile layer (100% Free - Cloudflare CDN backed)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-        subdomains: 'abcd',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    }).addTo(map);
-
-    // Force Leaflet to recalculate container size and load tiles correctly
-    // This is critical when the map is inside a container that was hidden or overlayed
-    setTimeout(function() {
-        map.invalidateSize();
-    }, 200);
-
-    // Second invalidateSize for slower connections / late layout shifts
-    setTimeout(function() {
-        map.invalidateSize();
-    }, 1000);
-
-    // Initial default User marker icon
-    const userIcon = L.divIcon({
-        className: 'custom-user-marker',
-        html: '<div style="background-color: #0d6efd; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(13,110,253,0.8);"></div>',
-        iconSize: [20, 20],
-        iconAnchor: [10, 10]
-    });
-    userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
-    userMarker.bindPopup("<strong>Default Location Area</strong>");
-
-    // Bind Geolocation Button
-    const geoBtn = document.getElementById('btn-geolocation');
-    if (geoBtn) {
-        geoBtn.addEventListener('click', function() {
-            detectUserLocation(true);
+    try {
+        // Initialize Leaflet map
+        map = L.map('map', {
+            center: [userLat, userLng],
+            zoom: 14,
+            zoomControl: true
         });
-    }
 
-    // Trigger initial geolocation
-    detectUserLocation(false);
+        console.log("[Map] Leaflet map object created successfully.");
 
-    // Check URL parameters (e.g. ?type=Hospital)
-    const urlParams = new URLSearchParams(window.location.search);
-    const typeParam = urlParams.get('type');
-    if (typeParam) {
-        setTimeout(() => {
-            triggerSearch(typeParam);
+        // Add OpenStreetMap tile layer (100% Free - No API Key, No Watermark)
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        console.log("[Map] Tile layer added.");
+
+        // Force Leaflet to recalculate container size and load tiles correctly
+        // This is critical when the map is inside a container that was hidden or overlayed
+        requestAnimationFrame(function() {
+            map.invalidateSize();
+        });
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 300);
+        setTimeout(function() {
+            map.invalidateSize();
         }, 1000);
+
+        // Initial default User marker icon
+        const userIcon = L.divIcon({
+            className: 'custom-user-marker',
+            html: '<div style="background-color: #0d6efd; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 8px rgba(13,110,253,0.8);"></div>',
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
+        });
+        userMarker = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
+        userMarker.bindPopup("<strong>Default Location Area</strong>");
+
+        // Hide loading overlay now that map is ready
+        const mapLoader = document.getElementById('map-loader');
+        if (mapLoader) {
+            mapLoader.style.opacity = '0';
+            setTimeout(() => mapLoader.style.display = 'none', 300);
+        }
+
+        // Bind Geolocation Button
+        const geoBtn = document.getElementById('btn-geolocation');
+        if (geoBtn) {
+            geoBtn.addEventListener('click', function() {
+                detectUserLocation(true);
+            });
+        }
+
+        // Trigger initial geolocation (async - won't block map render)
+        detectUserLocation(false);
+
+        // Check URL parameters (e.g. ?type=Hospital)
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeParam = urlParams.get('type');
+        if (typeParam) {
+            setTimeout(() => {
+                triggerSearch(typeParam);
+            }, 1000);
+        }
+
+        console.log("[Map] Map initialization complete!");
+
+    } catch (err) {
+        console.error("[Map] Fatal error during map initialization:", err);
+        showMapError("Failed to initialize map. Please refresh the page.");
+    }
+}
+
+/**
+ * Shows a visible error message inside the map container
+ */
+function showMapError(message) {
+    const mapLoader = document.getElementById('map-loader');
+    const mapLoaderText = document.getElementById('map-loader-text');
+    if (mapLoader) {
+        mapLoader.style.backgroundColor = 'rgba(255, 235, 235, 0.95)';
+    }
+    if (mapLoaderText) {
+        mapLoaderText.innerHTML = '<span class="text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>' + message + '</span>';
     }
 }
 
@@ -568,9 +599,5 @@ function stopRealTimeNavigation() {
     showAlert("Live GPS Navigation stopped.", "info");
 }
 
-// Auto-start Leaflet map reliably when script loads
-if (document.readyState === "complete" || document.readyState === "interactive") {
-    setTimeout(initLeafletMap, 100);
-} else {
-    document.addEventListener("DOMContentLoaded", initLeafletMap);
-}
+// NOTE: Map initialization is called from dashboard.html ONLY after window.load
+// Do NOT add auto-start code here - it causes race conditions.
