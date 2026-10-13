@@ -1,20 +1,20 @@
 import os
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
+# Load environment variables from .env file (local development)
 load_dotenv()
 
 class Config:
-    # Flask application key
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'default-development-secret-key-12345')
+    # Flask secret key for session encryption
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
     
-    # MongoDB Database configuration
-    # Can connect to a local server or a free MongoDB Atlas cloud cluster
+    # MongoDB Database configuration (defaults to local MongoDB server)
     MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/emergency_route_system')
     
-    # Google Maps API Configuration
+    # Google Maps API Configuration (optional - app uses free Leaflet by default)
     GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
     
-    # Session Configuration
+    # Session Configuration (configured for local HTTP development in VS Code)
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    SESSION_COOKIE_SECURE = False

@@ -67,10 +67,37 @@
             <h1 class="h2 fw-bold text-dark Outfit-font">Emergency Route Finder</h1>
             <p class="text-muted mb-0">Find nearby emergency services and get directions quickly.</p>
         </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
             <button id="btn-geolocation" class="btn btn-dark btn-lg rounded-pill shadow-sm px-4 py-2 fw-semibold">
-                <i class="fa-solid fa-location-crosshairs text-danger me-2"></i>Use My Current Location
+                <i class="fa-solid fa-location-crosshairs text-danger me-2"></i>Use My Live GPS
             </button>
+        </div>
+    </div>
+
+    <!-- Real-time Location Search & Control Bar -->
+    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4 bg-white">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-8">
+                <form id="location-search-form" onsubmit="searchCustomLocation(event); return false;">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-location-dot text-danger"></i></span>
+                        <input type="text" id="manual-location-input" class="form-control bg-light border-start-0" placeholder="Type your city, colony, area, or landmark (e.g. your neighborhood)...">
+                        <button type="submit" class="btn btn-danger px-4 fw-semibold" id="btn-search-location">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Search Area
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center justify-content-md-end gap-2">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2 rounded-pill small">
+                        <i class="fa-solid fa-satellite-dish me-1"></i> Real-Time Active
+                    </span>
+                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1.5" onclick="detectUserLocation(true)" title="Refresh location">
+                        <i class="fa-solid fa-arrows-rotate me-1"></i> Refresh
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -78,7 +105,7 @@
     <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4 p-3" role="alert" id="location-alert-box">
         <i class="fa-solid fa-circle-info fs-4 text-info me-3"></i>
         <div>
-            <strong>GPS Status:</strong> <span id="location-status-text">Detecting your location... Please allow GPS permissions when prompted.</span>
+            <strong>Location Status:</strong> <span id="location-status-text">Detecting your real-time location... Please allow GPS permissions when prompted.</span>
         </div>
     </div>
 
@@ -213,7 +240,7 @@
                         </div>
                     </div>
                     
-                    <div class="row g-2 mb-4">
+                    <div class="row g-2 mb-3">
                         <div class="col-6">
                             <div class="p-3 bg-light rounded-3 text-center border">
                                 <span class="text-muted small d-block mb-1"><i class="fa-solid fa-arrows-left-right me-1"></i>Distance</span>
@@ -225,6 +252,17 @@
                                 <span class="text-muted small d-block mb-1"><i class="fa-solid fa-clock me-1"></i>Duration</span>
                                 <h4 class="fw-bold mb-0 text-success" id="route-duration">0 mins</h4>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Available Paths / Route Alternatives Selection -->
+                    <div class="mb-3 p-3 bg-light rounded-3 border" id="route-alternatives-container">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-muted small fw-bold text-uppercase"><i class="fa-solid fa-signs-post text-success me-1"></i>Available Paths (<span id="route-count-badge">1</span>)</span>
+                            <small class="text-primary fw-semibold">Click to select</small>
+                        </div>
+                        <div id="route-alternatives-buttons" class="d-flex flex-column gap-2">
+                            <!-- Injected by Javascript -->
                         </div>
                     </div>
 

@@ -15,48 +15,67 @@ app.config.from_object(Config)
 # ==================================================
 # DATABASE UTILITIES
 # ==================================================
+_mongo_client = None
 _INDEXES_CREATED = False
 
 def get_db():
-    """Opens a new MongoDB client connection if there is none yet for the current application context."""
-    global _INDEXES_CREATED
-    if 'db' not in g:
-        mongo_uri = app.config.get('MONGO_URI', '')
-        if 'mongodb+srv://' in mongo_uri and 'tlsAllowInvalidCertificates' not in mongo_uri:
-            join_char = '&' if '?' in mongo_uri else '?'
-            mongo_uri += f"{join_char}tls=true&tlsAllowInvalidCertificates=true"
+    """Returns a connected MongoDB database instance, reusing connection pool and handling fallback."""
+    global _mongo_client, _INDEXES_CREATED
 
+    if _mongo_client is None:
+        mongo_uri = app.config.get('MONGO_URI', 'mongodb://localhost:27017/emergency_route_system')
+        
+        # 1. Try configured URI
         try:
-            g.client = pymongo.MongoClient(
-                mongo_uri,
-                serverSelectionTimeoutMS=5000,
-                tls=True,
-                tlsAllowInvalidCertificates=True,
-                tlsInsecure=True
-            )
-        except Exception:
-            g.client = pymongo.MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
-        try:
-            # Attempt to extract default database name from connection string
-            g.db = g.client.get_default_database()
-            if g.db is None or g.db.name == 'admin':
-                g.db = g.client['emergency_route_system']
-        except Exception:
-            g.db = g.client['emergency_route_system']
-            
-        # Ensure database indexes exist once per process worker
-        if not _INDEXES_CREATED:
+            if 'mongodb+srv://' in mongo_uri:
+                _mongo_client = pymongo.MongoClient(
+                    mongo_uri,
+                    serverSelectionTimeoutMS=4000,
+                    tls=True,
+                    tlsAllowInvalidCertificates=True
+                )
+            else:
+                _mongo_client = pymongo.MongoClient(
+                    mongo_uri,
+                    serverSelectionTimeoutMS=3000
+                )
+            # Verify connectivity
+            _mongo_client.server_info()
+        except Exception as primary_err:
+            print(f"[WARNING] Primary MongoDB connection failed ({primary_err}). Falling back to local MongoDB...")
             try:
-                g.db.users.create_index("email", unique=True)
-                g.db.search_history.create_index("user_id")
-                g.db.search_history.create_index("searched_at")
-                g.db.route_history.create_index("user_id")
-                g.db.route_history.create_index("created_at")
-                _INDEXES_CREATED = True
-            except Exception:
-                pass
+                # 2. Fallback to local MongoDB
+                local_uri = 'mongodb://localhost:27017/emergency_route_system'
+                _mongo_client = pymongo.MongoClient(
+                    local_uri,
+                    serverSelectionTimeoutMS=3000
+                )
+                _mongo_client.server_info()
+            except Exception as local_err:
+                print(f"[ERROR] Local MongoDB fallback also failed: {local_err}")
+                # Re-raise primary error for standard Flask error handler
+                raise primary_err
 
-    return g.db
+    try:
+        db = _mongo_client.get_default_database()
+        if db is None or db.name == 'admin':
+            db = _mongo_client['emergency_route_system']
+    except Exception:
+        db = _mongo_client['emergency_route_system']
+        
+    # Ensure database indexes exist once per process worker
+    if not _INDEXES_CREATED:
+        try:
+            db.users.create_index("email", unique=True)
+            db.search_history.create_index("user_id")
+            db.search_history.create_index("searched_at")
+            db.route_history.create_index("user_id")
+            db.route_history.create_index("created_at")
+            _INDEXES_CREATED = True
+        except Exception:
+            pass
+
+    return db
 
 @app.context_processor
 def inject_now():
@@ -65,10 +84,8 @@ def inject_now():
 
 @app.teardown_appcontext
 def close_db(error):
-    """Closes the MongoDB client connection at the end of the request."""
-    client = g.pop('client', None)
-    if client is not None:
-        client.close()
+    """PyMongo client maintains an internal connection pool across requests."""
+    pass
 
 @app.errorhandler(PyMongoError)
 def handle_database_error(error):
@@ -137,7 +154,7 @@ def register():
         
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
-        email = request.form.get('email', '').strip()
+        email = request.form.get('email', '').strip().lower()
         phone = request.form.get('phone', '').strip()
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirm_password', '')
@@ -189,7 +206,7 @@ def login():
         return redirect(url_for('dashboard'))
         
     if request.method == 'POST':
-        email = request.form.get('email', '').strip()
+        email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
         
         if not email or not password:
